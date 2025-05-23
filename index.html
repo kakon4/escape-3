@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>חדר בריחה מיסטי</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --dark-blue: #264653;
+            --teal: #2a9d8f;
+            --yellow: #e9c46a;
+            --orange: #f4a261;
+            --coral: #e76f51;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Rubik', sans-serif;
+        }
+        
+        body {
+            background-color: var(--dark-blue);
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(42, 157, 143, 0.2) 0%, transparent 50%),
+                radial-gradient(circle at 90% 80%, rgba(231, 111, 81, 0.2) 0%, transparent 50%),
+                radial-gradient(circle at 50% 50%, rgba(233, 196, 106, 0.1) 0%, transparent 70%);
+        }
+        
+        .container {
+            max-width: 800px;
+            width: 100%;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background-color: rgba(38, 70, 83, 0.8);
+            border-radius: 15px;
+            border: 2px solid var(--teal);
+            box-shadow: 0 0 15px rgba(42, 157, 143, 0.5);
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            color: var(--yellow);
+            text-shadow: 0 0 5px rgba(233, 196, 106, 0.5);
+        }
+        
+        .video-container {
+            width: 100%;
+            margin: 20px 0;
+            padding: 10px;
+            background-color: rgba(38, 70, 83, 0.8);
+            border-radius: 15px;
+            border: 2px solid var(--teal);
+            box-shadow: 0 0 15px rgba(42, 157, 143, 0.5);
+        }
+        
+        .video-placeholder {
+            width: 100%;
+            aspect-ratio: 16/9;
+            background-color: rgba(0, 0, 0, 0.3);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: var(--yellow);
+            font-size: 1.5rem;
+            border-radius: 10px;
+        }
+        
+        .riddle-container {
+            padding: 20px;
+            background-color: rgba(38, 70, 83, 0.8);
+            border-radius: 15px;
+            margin: 20px 0;
+            border: 2px solid var(--teal);
+            box-shadow: 0 0 15px rgba(42, 157, 143, 0.5);
+            transition: all 0.3s ease;
+        }
+        
+        .riddle-container:hover {
+            box-shadow: 0 0 20px rgba(233, 196, 106, 0.7);
+        }
+        
+        .riddle {
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+            color: var(--yellow);
+            line-height: 1.6;
+        }
+        
+        .answer-input {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        input {
+            padding: 12px 15px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid var(--teal);
+            transition: all 0.3s ease;
+        }
+        
+        input:focus {
+            outline: none;
+            box-shadow: 0 0 0 2px var(--yellow);
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+        
+        button {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            background-color: var(--teal);
+            color: white;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+        
+        button:hover {
+            background-color: var(--coral);
+            transform: translateY(-2px);
+        }
+        
+        .feedback {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 8px;
+            font-weight: 500;
+            display: none;
+        }
+        
+        .correct {
+            background-color: rgba(42, 157, 143, 0.3);
+            color: var(--yellow);
+            border: 1px solid var(--teal);
+        }
+        
+        .incorrect {
+            background-color: rgba(231, 111, 81, 0.3);
+            color: var(--yellow);
+            border: 1px solid var(--coral);
+        }
+        
+        .mystic-element {
+            position: absolute;
+            opacity: 0.1;
+            z-index: -1;
+        }
+        
+        .glow {
+            position: fixed;
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            pointer-events: none;
+            background: radial-gradient(circle, rgba(233, 196, 106, 0.4) 0%, transparent 70%);
+            transition: all 0.2s ease;
+            z-index: 999;
+            mix-blend-mode: screen;
+        }
+        
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            .riddle {
+                font-size: 1.1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>חדר הסודות המיסטיים</h1>
+            <p>פענחו את החידה כדי להמשיך במסע</p>
+        </header>
+        
+        <div class="video-container">
+            <iframe src="https://drive.google.com/file/d/1kWnRdzl_1peXLGPHCH43n9LTql2LqLaq/preview" width="640" height="480" allow="autoplay"></iframe>
+        </div>
+        
+        <div class="riddle-container">
+            <div class="riddle">
+                <h2>חידה מסתורית</h2>
+                <p>מה הסיסמא לחידת האוכל?</p>
+            </div>
+            <div class="answer-input">
+                <input type="text" id="riddle-answer" placeholder="הקלד את תשובתך כאן...">
+                <button id="check-answer">בדוק תשובה</button>
+                <div class="feedback" id="feedback-message"></div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="glow" id="glow"></div>
+    
+    <script>
+        // מעקב אחרי העכבר עם האפקט זוהר
+        const glow = document.getElementById('glow');
+        
+        document.addEventListener('mousemove', (e) => {
+            glow.style.left = e.clientX - 50 + 'px';
+            glow.style.top = e.clientY - 50 + 'px';
+        });
+        
+        // בדיקת התשובה
+        const checkAnswerButton = document.getElementById('check-answer');
+        const riddleAnswer = document.getElementById('riddle-answer');
+        const feedbackMessage = document.getElementById('feedback-message');
+        
+        const correctAnswer = "משהו";
+        
+        checkAnswerButton.addEventListener('click', () => {
+            const userAnswer = riddleAnswer.value.trim();
+            
+            // רשימת תשובות נכונות אפשריות
+            const possibleAnswers = [
+                "האות י", 
+                "משהו", 
+                "שהאות יוד", 
+                "יוד", 
+                "האות י'", 
+                "י'"
+            ];
+            
+            if (possibleAnswers.some(answer => userAnswer.toLowerCase() === answer.toLowerCase())) {
+                // תשובה נכונה
+                feedbackMessage.className = "feedback correct";
+                feedbackMessage.textContent = "תשובה נכונה! המשיכו בדרכם לך ימינה לדלת לכי שמאלה לחלון, מה יוצא לך ולה. ";
+                feedbackMessage.style.display = "block";
+                
+                // הוספת אנימציה לחידה שנפתרה
+                document.querySelector('.riddle-container').style.boxShadow = "0 0 30px rgba(42, 157, 143, 0.8)";
+                
+                // כאן אפשר להוסיף פעולות נוספות שקורות כשהתשובה נכונה
+            } else {
+                // תשובה שגויה
+                feedbackMessage.className = "feedback incorrect";
+                feedbackMessage.textContent = "תשובה שגויה, נסה שוב...";
+                feedbackMessage.style.display = "block";
+                
+                // אנימציה לתשובה שגויה
+                document.querySelector('.riddle-container').classList.add('shake');
+                setTimeout(() => {
+                    document.querySelector('.riddle-container').classList.remove('shake');
+                }, 500);
+            }
+        });
+
+        // הוספת אלמנטים מיסטיים לרקע
+        function createMysticElements() {
+            const symbols = ['✦', '✧', '⋆', '⊹', '✵', '✴', '✺', '✹', '✻', '✼', '❋', '✱', '✲', '✳', '✶'];
+            const container = document.querySelector('body');
+            
+            for (let i = 0; i < 20; i++) {
+                const element = document.createElement('div');
+                element.className = 'mystic-element';
+                element.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+                element.style.fontSize = Math.random() * 30 + 20 + 'px';
+                element.style.color = [
+                    'var(--teal)', 
+                    'var(--yellow)', 
+                    'var(--orange)', 
+                    'var(--coral)'
+                ][Math.floor(Math.random() * 4)];
+                element.style.left = Math.random() * 100 + 'vw';
+                element.style.top = Math.random() * 100 + 'vh';
+                element.style.transform = `rotate(${Math.random() * 360}deg)`;
+                
+                container.appendChild(element);
+            }
+        }
+        
+        createMysticElements();
+        
+        // הוספת אירוע כניסה למקלדת
+        riddleAnswer.addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                checkAnswerButton.click();
+            }
+        });
+    </script>
+</body>
+</html>
