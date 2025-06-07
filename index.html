@@ -60,26 +60,81 @@
             text-shadow: 0 0 5px rgba(233, 196, 106, 0.5);
         }
         
+        /* תיקון הווידאו למובייל */
         .video-container {
             width: 100%;
             margin: 20px 0;
-            padding: 10px;
+            padding: 15px;
             background-color: rgba(38, 70, 83, 0.8);
             border-radius: 15px;
             border: 2px solid var(--teal);
             box-shadow: 0 0 15px rgba(42, 157, 143, 0.5);
         }
         
-        .video-placeholder {
+        .video-wrapper {
+            position: relative;
             width: 100%;
-            aspect-ratio: 16/9;
-            background-color: rgba(0, 0, 0, 0.3);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            color: var(--yellow);
-            font-size: 1.5rem;
+            height: 0;
+            padding-bottom: 56.25%; /* יחס 16:9 */
+            overflow: hidden;
             border-radius: 10px;
+            background-color: rgba(0, 0, 0, 0.3);
+        }
+        
+        .video-wrapper iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+            border-radius: 10px;
+        }
+        
+        /* התאמות מיוחדות למובייל */
+        @media (max-width: 768px) {
+            body {
+                padding: 15px;
+            }
+            
+            header {
+                padding: 15px;
+                margin-bottom: 20px;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .video-container {
+                padding: 10px;
+                margin: 15px 0;
+            }
+            
+            .video-wrapper {
+                padding-bottom: 60%; /* יחס מותאם למובייל בפורטרט */
+            }
+        }
+        
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.6rem;
+            }
+            
+            body {
+                padding: 10px;
+            }
+            
+            .video-wrapper {
+                padding-bottom: 65%; /* יחס מותאם למסכים קטנים מאוד */
+            }
+        }
+        
+        /* התאמה לכיוון לנדסקייפ במובייל */
+        @media (max-width: 768px) and (orientation: landscape) {
+            .video-wrapper {
+                padding-bottom: 45%; /* יחס מותאם ללנדסקייפ */
+            }
         }
         
         .riddle-container {
@@ -182,13 +237,28 @@
         }
         
         @media (max-width: 768px) {
-            h1 {
-                font-size: 1.8rem;
-            }
-            
             .riddle {
                 font-size: 1.1rem;
             }
+            
+            .riddle-container {
+                padding: 15px;
+            }
+            
+            input, button {
+                font-size: 16px; /* מונע זום במכשירי iOS */
+            }
+        }
+        
+        /* אנימציה להרעשה */
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+        
+        .shake {
+            animation: shake 0.5s ease-in-out;
         }
     </style>
 </head>
@@ -200,13 +270,18 @@
         </header>
         
         <div class="video-container">
-            <iframe src="https://drive.google.com/file/d/1kWnRdzl_1peXLGPHCH43n9LTql2LqLaq/preview" width="640" height="480" allow="autoplay"></iframe>
+            <div class="video-wrapper">
+                <iframe src="https://drive.google.com/file/d/19hUUYTbt4t1g3SEorVUhqxfnkz9VV25b/preview" 
+                        allow="autoplay" 
+                        allowfullscreen>
+                </iframe>
+            </div>
         </div>
         
         <div class="riddle-container">
             <div class="riddle">
                 <h2>חידה מסתורית</h2>
-                <p>מה הסיסמא לחידת האוכל?</p>
+                <p>מה הסיסמא לחידה?</p>
             </div>
             <div class="answer-input">
                 <input type="text" id="riddle-answer" placeholder="הקלד את תשובתך כאן...">
@@ -219,38 +294,43 @@
     <div class="glow" id="glow"></div>
     
     <script>
-        // מעקב אחרי העכבר עם האפקט זוהר
+        // מעקב אחרי העכבר עם האפקט זוהר (רק במחשב)
         const glow = document.getElementById('glow');
         
-        document.addEventListener('mousemove', (e) => {
-            glow.style.left = e.clientX - 50 + 'px';
-            glow.style.top = e.clientY - 50 + 'px';
-        });
+        // בדיקה אם המכשיר תומך במגע
+        const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+        
+        if (!isTouchDevice) {
+            document.addEventListener('mousemove', (e) => {
+                glow.style.left = e.clientX - 50 + 'px';
+                glow.style.top = e.clientY - 50 + 'px';
+            });
+        } else {
+            // הסתר את האפקט זוהר במכשירי מגע
+            glow.style.display = 'none';
+        }
         
         // בדיקת התשובה
         const checkAnswerButton = document.getElementById('check-answer');
         const riddleAnswer = document.getElementById('riddle-answer');
         const feedbackMessage = document.getElementById('feedback-message');
         
-        const correctAnswer = "משהו";
+        const correctAnswer = "בשיתוף פעולה";
         
-        checkAnswerButton.addEventListener('click', () => {
+        checkAnswerButton.addEventListener('click', checkAnswer);
+        
+        function checkAnswer() {
             const userAnswer = riddleAnswer.value.trim();
             
             // רשימת תשובות נכונות אפשריות
             const possibleAnswers = [
-                "האות י", 
-                "משהו", 
-                "שהאות יוד", 
-                "יוד", 
-                "האות י'", 
-                "י'"
+                "בשיתוף פעולה"
             ];
             
             if (possibleAnswers.some(answer => userAnswer.toLowerCase() === answer.toLowerCase())) {
                 // תשובה נכונה
                 feedbackMessage.className = "feedback correct";
-                feedbackMessage.textContent = "תשובה נכונה! המשיכו בדרכם לך ימינה לדלת לכי שמאלה לחלון, מה יוצא לך ולה. ";
+                feedbackMessage.textContent = "תשובה נכונה! המשיכו בדרכם לך ימינה לדלת לכי שמאלה לחלון, מה יוצא לך ולה.";
                 feedbackMessage.style.display = "block";
                 
                 // הוספת אנימציה לחידה שנפתרה
@@ -269,7 +349,7 @@
                     document.querySelector('.riddle-container').classList.remove('shake');
                 }, 500);
             }
-        });
+        }
 
         // הוספת אלמנטים מיסטיים לרקע
         function createMysticElements() {
@@ -300,9 +380,36 @@
         // הוספת אירוע כניסה למקלדת
         riddleAnswer.addEventListener('keypress', function(event) {
             if (event.key === 'Enter') {
-                checkAnswerButton.click();
+                checkAnswer();
             }
         });
+        
+        // התאמה דינמית לשינוי כיוון המסך
+        function adjustVideoOnOrientationChange() {
+            const videoWrapper = document.querySelector('.video-wrapper');
+            const isMobile = window.innerWidth <= 768;
+            const isPortrait = window.innerHeight > window.innerWidth;
+            
+            if (isMobile) {
+                if (isPortrait) {
+                    videoWrapper.style.paddingBottom = '60%';
+                } else {
+                    videoWrapper.style.paddingBottom = '45%';
+                }
+            } else {
+                videoWrapper.style.paddingBottom = '56.25%';
+            }
+        }
+        
+        // קרא לפונקציה בטעינת הדף
+        adjustVideoOnOrientationChange();
+        
+        // האזן לשינויים בכיוון המסך
+        window.addEventListener('orientationchange', () => {
+            setTimeout(adjustVideoOnOrientationChange, 100);
+        });
+        
+        window.addEventListener('resize', adjustVideoOnOrientationChange);
     </script>
 </body>
 </html>
